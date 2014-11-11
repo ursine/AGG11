@@ -22,61 +22,68 @@
 #include <math.h>
 #include "agg_basics.h"
 
+#if __cplusplus <= 199711L
+#define AGG_CONSTEXPR const 
+#else
+#define AGG_CONSTEXPR constexpr
+#endif
+
+
 namespace agg
 {
 
     //------------------------------------------------------vertex_dist_epsilon
     // Coinciding points maximal distance (Epsilon)
-    const double vertex_dist_epsilon = 1e-14;
+    AGG_CONSTEXPR double vertex_dist_epsilon = 1e-14;
 
     //-----------------------------------------------------intersection_epsilon
     // See calc_intersection
-    const double intersection_epsilon = 1.0e-30;
+    AGG_CONSTEXPR double intersection_epsilon = 1.0e-30;
 
     //------------------------------------------------------------cross_product
-    AGG_INLINE double cross_product(double x1, double y1, 
-                                    double x2, double y2, 
-                                    double x,  double y)
+    AGG_INLINE AGG_CONSTEXPR double cross_product(const double x1, const double y1, 
+                                                  const double x2, const double y2, 
+                                                  const double x,  const double y)
     {
         return (x - x2) * (y2 - y1) - (y - y2) * (x2 - x1);
     }
 
     //--------------------------------------------------------point_in_triangle
-    AGG_INLINE bool point_in_triangle(double x1, double y1, 
-                                      double x2, double y2, 
-                                      double x3, double y3, 
-                                      double x,  double y)
+    AGG_INLINE const bool point_in_triangle(const double x1, const double y1, 
+                                            const double x2, const double y2, 
+                                            const double x3, const double y3, 
+                                            const double x,  const double y)
     {
-        bool cp1 = cross_product(x1, y1, x2, y2, x, y) < 0.0;
-        bool cp2 = cross_product(x2, y2, x3, y3, x, y) < 0.0;
-        bool cp3 = cross_product(x3, y3, x1, y1, x, y) < 0.0;
+        const bool cp1 = cross_product(x1, y1, x2, y2, x, y) < 0.0;
+        const bool cp2 = cross_product(x2, y2, x3, y3, x, y) < 0.0;
+        const bool cp3 = cross_product(x3, y3, x1, y1, x, y) < 0.0;
         return cp1 == cp2 && cp2 == cp3 && cp3 == cp1;
     }
 
-    //-----------------------------------------------------------calc_distance
-    AGG_INLINE double calc_distance(double x1, double y1, double x2, double y2)
-    {
-        double dx = x2-x1;
-        double dy = y2-y1;
-        return sqrt(dx * dx + dy * dy);
-    }
-
     //--------------------------------------------------------calc_sq_distance
-    AGG_INLINE double calc_sq_distance(double x1, double y1, double x2, double y2)
+    AGG_INLINE const double calc_sq_distance(const double x1, const double y1,
+		 		             const double x2, const double y2)
     {
-        double dx = x2-x1;
-        double dy = y2-y1;
+        const double dx = x2-x1;
+        const double dy = y2-y1;
         return dx * dx + dy * dy;
     }
 
-    //------------------------------------------------calc_line_point_distance
-    AGG_INLINE double calc_line_point_distance(double x1, double y1, 
-                                               double x2, double y2, 
-                                               double x,  double y)
+    //-----------------------------------------------------------calc_distance
+    AGG_INLINE const double calc_distance(const double x1, const double y1,
+		    		          const double x2, const double y2)
     {
-        double dx = x2-x1;
-        double dy = y2-y1;
-        double d = sqrt(dx * dx + dy * dy);
+        return sqrt( calc_sq_distance(x1,y1,x2,y2) );
+    }
+
+    //------------------------------------------------calc_line_point_distance
+    AGG_INLINE const double calc_line_point_distance(const double x1, const double y1, 
+                                                     const double x2, const double y2, 
+                                                     const double x,  const double y)
+    {
+        const double dx = x2-x1;
+        const double dy = y2-y1;
+        const double d = sqrt(dx * dx + dy * dy);
         if(d < vertex_dist_epsilon)
         {
             return calc_distance(x1, y1, x, y);
